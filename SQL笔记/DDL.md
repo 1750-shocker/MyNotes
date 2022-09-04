@@ -122,7 +122,7 @@ TRUNCATE TABLE tb1; -- 删除表再创建一个空的出来相当于删除所有
 UPDATE tb1 SET id=1, age=21 [WHERE id=2]; -- 不加条件，修改所有
 ```
 
-## DQL 查询语句
+## DQL
 
 语法：
 
@@ -228,4 +228,84 @@ SELECT * FROM student LIMIT 0,3; -- 每页显示3条数据，查询第1页数据
 SELECT * FROM student LIMIT 3,3; -- 每页显示3条数据，查询第2页数据
 SELECT * FROM student LIMIT 6,3; -- 每页显示3条数据，查询第3页数据
 -- 开始索引=（页码-1）*每页条数
+```
+
+## 约束
+
+### 非空约束NOT NULL
+
+```sql
+CREATE TABLE stu(
+    id INT,
+    NAME VARCHAR(20) NOT NULL
+);
+ALTER TABLE stu MODIFY gender int [NOT NULL]; -- 写/不屑=删除/添加约束
+```
+
+### 唯一约束UNIQUE
+
+```sql
+CREATE TABLE stu1(
+    id INT,
+    phone_number VARCHAR(20) UNIQUE -- 该列的值不可重复，null也只可以有一个
+);
+ALTER TABLE stu1 DROP INDEX phone_number; --删除约束，添加用modify
+```
+
+### 主键约束：PRIMARY KEY 非空+唯一
+
+```sql
+CREATE TABLE stu2(
+    id INT PRIMARY KEY,
+    hobby VARCHAR(20)
+);
+--删除主键，添加用modify
+ALTER TABLE stu2 DROP PRIMARY KEY;
+```
+
+### 自动增长 AUTO_INCREMENT
+
+该列应该是数值类型
+
+```sql
+CREATE TABLE stu2(
+    id INT PRIMARY KEY AUTO_INCREMENT, -- 一般与主键一起使用
+    hobby VARCHAR(20)
+);
+INSERT INTO stu2 VALUES(NULL,'ccds');
+INSERT INTO stu2 VALUES(NULL,'ccsc');
+INSERT INTO stu2 VALUES(19,'cfcc');
+INSERT INTO stu2 VALUES(NULL,'cccc'); -- 根据上一条id+1
+--删除、增加自动增长
+ALTER TABLE stu2 MODIFY id INT [AUTO_INCREMENT];
+```
+
+### 外键约束
+
+==主表==中的某列被==从表==中的外键字段（外键字段也是一列，而外键名是外键名）指向，于是该列无法删除，外键不可以添加该列中不存在的值
+
+```sql
+CREATE TABLE department(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    dep_name VARCHAR(20),
+    dep_location VARCHAR(20)
+);-- 主表
+
+CREATE TABLE employee( -- 从表
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    `name` VARCHAR(20),
+    age INT,
+    dep_id INT,
+    CONSTRAINT emp_dept_fk FOREIGN KEY (dep_id) REFERENCES department(id)
+); -- constraint 外键名称 foreign key (从表列名) references 主表名(主表列名)
+-- 主键所在的表就是主表（父表），外键所在的表就是从表（子表）。
+-- 允许在外键中出现空值null。也就是说，只要外键的每个非空值出现在指定的主键中，这个外键的内容就是正确的。一个表可以有一个或多个外键，外键可以为空值，若不为空值，则每一个外键的值必须等于主表中主键的某个值。
+-- 删除外键
+ALTER TABLE employee DROP FOREIGN KEY emp_dept_fk; -- drop froeign key 外键名
+-- 添加外键
+ALTER TABLE employee ADD CONSTRAINT emp_dept_fk FOREIGN KEY (dep_id) REFERENCES department(id);
+-- 设置级联更新，正常情况下修改主表的列的内容，从表中的外键列不会自动更新。
+ALTER TABLE employee ADD CONSTRAINT emp_dept_fk FOREIGN KEY (dep_id) REFERENCES department(id) ON UPDATE CASCADE;
+-- 设置级联删除，删除主表列，从表关联的对应外键也会删除
+ALTER TABLE employee ADD CONSTRAINT emp_dept_fk FOREIGN KEY (dep_id) REFERENCES department(id) ON DELETE CASCADE;
 ```
