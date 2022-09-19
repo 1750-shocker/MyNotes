@@ -7,7 +7,6 @@ A custom ViewPager title strip which gives continuous feedback to the user when 
 
 This library has been added some features and utilities based on [android-SlidingTabBasic][google_slidingtabbasic] project of Google Samples.
 
-
 ![SmartTabLayout Demo1][demo1_gif] ![SmartTabLayout Demo2][demo2_gif]
 ![SmartTabLayout Demo3][demo3_gif] ![SmartTabLayout Demo4][demo4_gif]
 ![SmartTabLayout Demo5][demo5_gif] ![SmartTabLayout Demo6][demo6_gif]
@@ -271,7 +270,7 @@ public void onPageSelected(int position) {
 
 # Looking for iOS ?
  Check [WormTabStrip](https://github.com/EzimetYusup/WormTabStrip) out.
- 
+
 # LICENSE
 
 ```

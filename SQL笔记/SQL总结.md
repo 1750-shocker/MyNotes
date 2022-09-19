@@ -309,3 +309,160 @@ ALTER TABLE employee ADD CONSTRAINT emp_dept_fk FOREIGN KEY (dep_id) REFERENCES 
 -- 设置级联删除，删除主表列，从表关联的对应外键也会删除
 ALTER TABLE employee ADD CONSTRAINT emp_dept_fk FOREIGN KEY (dep_id) REFERENCES department(id) ON DELETE CASCADE;
 ```
+
+## 多表
+
+### 多表查询的形式
+
+1对1，例如一个人对应一个身份证，该关系很少存在实际项目中
+
+#### 1对n
+
+一个部门对应多个员工
+
+![](assets/02.png)
+
+```sql
+ CREATE TABLE tab_category(
+    cid INT PRIMARY KEY AUTO_INCREMENT,
+    cnmae VARCHAR(100) NOT NULL UNIQUE
+ );
+ CREATE TABLE tab_route(
+    rid INT PRIMARY KEY AUTO_INCREMENT,
+    rname VARCHAR(10) NOT NULL UNIQUE,
+    price DOUBLE,
+    cid INT,
+    FOREIGN KEY (cid) REFERENCES tab_category(cid) -- 外键名称省略，自动分配
+ ); -- 使用多的一方的外键指向一的一方的主键
+```
+
+#### n对n
+
+多个学生选多门课程
+
+![](assets/03.png)
+
+```sql
+ CREATE TABLE tab_user(
+    uid INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    `password` VARCHAR(30) NOT NULL,
+    `name` VARCHAR(100),
+    birthday DATE,
+    sex CHAR(1) DEFAULT '男',
+    telephone VARCHAR(11),
+    email VARCHAR(100)
+ );
+ CREATE TABLE tab_favorite( -- 多对多用中间表
+    rid INT,
+     uid INT,
+    `date` DATETIME,
+    PRIMARY KEY(rid,uid),
+    FOREIGN KEY(rid) REFERENCES tab_route(rid),
+    FOREIGN KEY(uid) REFERENCES tab_user(uid)
+ );
+```
+
+
+
+### 多表查询的分类
+
+#### 内连接查询：两表交集
+
+```sql
+-- 隐式内连接：使用where条件消除无用数据
+SELECT t1.name, t1.gender, t2.name
+FROM emp t1, dept t2 -- 起别名
+WHERE t1.'dept_id' = t2.'id';
+-- 显示内连接：
+SELECT * FROM emp [INNER] JOIN dept ON emp.'dept_id' = dept.'id';
+SELECT 字段列表 FROM 表1 INNNER JOIN 表2 ON 条件;
+```
+
+#### 外连接查询：左(右)表所有数据+交集
+
+```sql
+左外连接
+select * from tb1 left [outer] join tb2 on 条件
+右外连接
+select * from tb1 right [outer] join tb2 on 条件
+```
+
+#### 子查询：嵌套查询
+
+```sql
+子查询的结果集是单行单列
+select * from emp where emp.`salary` = (select max(salay) from emp);
+select * from emp where emp.`salary` < (select avg(salary) from emp);
+多行单列
+select * from emp where dept_id in (select id from dept where `name`='财务部' or `name`='市场部');
+多行多列,作为新表用
+select * from dept t1, (select * from emp where emp.`join`_date` > '2011-11-11') t2
+where t1.id = t2.dept_id;
+```
+
+## 事务
+
+```sql
+update account set balance = 1000;
+start transaction;
+update account set balance = balance - 500 where name = '张三';
+update account set balance = balance + 500 where name = '李四';
+commit;
+```
+
+## DCL
+
+```sql
+-- 管理用户
+create user '用户名'@'主机名' identified by '密码';
+-- 删除用户
+drop user '用户名'@'主机名';
+-- 修改用---户密码
+update user set password = password('新密码') where user = '用户名';
+set password for '用户名'@'主机名' = password('新密码');
+--主机名为%时表示任意主机
+-- 无验证登录
+cmd -> net stop mysql -- 管理员身份
+mysqld --skip-grant-tables
+-- 查询用户
+use mysql;
+select * from user;
+-- 权限管理
+show grants for '用户名'@'主机名';
+grant 权限列表 on 数据库.表 to '用户名'@'主机名';
+grant all on *.* to 'zhang'@'localhost';
+-- 撤销权限
+revoke 权限列表 on 数据库.表 from '用户名'@'主机名';
+```
+
+## 数据库设计范式
+
+![](assets/04.png)
+
+### 第一范式
+
+只要是用sql写的，自然符合第一范式，因为sql语言不支持写出复合列
+
+<img src="assets/10.png" style="zoom:50%;" />
+
+先理解范式中提到的几个概念：
+
+![](assets/07.png)
+
+<img src="assets/05.png" style="zoom:50%;" />
+
+### 第二范式
+
+表中的问题：学号+课程名称是码， 分数完全依赖码，而姓名、系名、系主任 只部份依赖于学号，按照第二范式修改后的表为：
+
+![](assets/09.png)
+
+### 第三范式
+
+按照第二范式分表后，解决了数据冗余，还存在2、3两个问题
+
+在学生表中，学号是码，系名完全依赖于学号，系主任（非主属性）完全依赖于系名（非主属性）且传递依赖于学号，消除改依赖后如下：
+
+<img src="assets/08.png" style="zoom:50%;" />
+

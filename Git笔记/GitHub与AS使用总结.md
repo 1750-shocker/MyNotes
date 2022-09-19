@@ -5,8 +5,9 @@
 * **step1**: GitHub设置token，用于在AS中添加GitHub账户，也可以密码登录
 * **step2**: 本地使用gitbash在家目录（windows中的用户目录）执行`ssh-keygen -t ed25519 -C [邮箱]`生成的ssh公钥保存在GitHub，私钥在本机用于push的身份验证
 * **step3**: GitHub中新建仓库（带有git ignore文件和README）
-* **step4**: 项目目录中`git init`，在git bash中`git remote add [别名] [ssh仓库地址]`，如果不是ssh，用https协议，在命令行中可以呼出github的账号密码登录界面，windows系统会将凭证存储，所以用https只需要登陆一次，但如果没在gitbash中登录并生成凭证就直接在AS中push会失败。`git clone [别名]`
-* **step5**: 将clone下来的文件夹内的git ignore等全部文件拖出替换
+* **step4**: 项目目录中`git init`，在git bash中`git remote add [别名] [ssh仓库地址]`，如果不是ssh，用https协议，在命令行中可以呼出github的账号密码登录界面，windows系统会将凭证存储，所以用https只需要登陆一次，但如果没在gitbash中登录并生成凭证就直接在AS中push会失败。
+* **step5**: `git clone [别名]`
+* **step6**: 将clone下来的文件夹内的git ignore等全部文件拖出替换
 
 <img src="assets/01.png" style="zoom:50%;" />
 
@@ -56,9 +57,9 @@
    > （commit的版本只增不减，后退不会删除版本）
 
    ```
-   git reset --soft [] //移动本地库
-   git reset --mixed [] //移动本地库和暂存区
-   git reset --hard [] //移动三个
+   git reset --soft [索引值] //移动本地库
+   git reset --mixed [索引值] //移动本地库和暂存区
+   git reset --hard [索引值] //移动三个
    ```
 
 7. 利用reset删除添加到暂存区还未commit的文件
@@ -111,7 +112,7 @@
 
 6. 解决冲突
 
-   合并相同的文件的相同行不一致，需要手动修改，后add文件并commit，注意，此时的commit不可以指定文件名，而是**直接`git commit -m "注释"`**很重要！
+   合并相同的文件的相同行不一致，需要手动修改，后add文件并commit，注意，此时的commit不可以指定文件名，而是**直接`git commit -m "注释"`**。这点很重要！
 
    ![02](assets/02.png)
 
