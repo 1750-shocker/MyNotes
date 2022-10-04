@@ -1,6 +1,6 @@
 # Kotlin的数组和集合
 
-### 数组
+## 数组
 
 ```kotlin
 fun ArrayExercise() {
@@ -30,7 +30,16 @@ fun ArrayExercise() {
         }
     }
 
-    fun ListExercise() {
+   
+```
+
+## 集合
+
+```kotlin
+arrayListOf() //可不写元素，都返回一个ArrayList
+ArrayList<类型>()
+
+ fun ListExercise() {
         //不可变，返回List
         var list1 = listOf("Java", "Kotlin", null, "Go")
         println(list1)
@@ -43,3 +52,4 @@ fun ArrayExercise() {
         var arrayList = arrayListOf<String>("Java", "Kotlin", "Go")//可以接收0个参数
     }
 ```
+
